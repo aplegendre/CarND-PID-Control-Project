@@ -1,21 +1,33 @@
 #ifndef PID_H
 #define PID_H
+#include <time.h>
 
 class PID {
 public:
   /*
   * Errors
   */
-  double p_error;
-  double i_error;
-  double d_error;
+  double p_error_;
+  double i_error_;
+  double d_error_;
+  double sq_error;
+  double n;
 
   /*
   * Coefficients
   */ 
-  double Kp;
-  double Ki;
-  double Kd;
+  double Kp_;
+  double Ki_;
+  double Kd_;
+  time_t timer;
+
+  /*
+  *  Twiddle parameters
+  */
+  double best_error;
+  double dp[3];
+  int param_index;
+  bool twiddle_down;
 
   /*
   * Constructor
@@ -38,9 +50,19 @@ public:
   void UpdateError(double cte);
 
   /*
+  * Update the steering values based on PID controller.
+  */
+  double UpdateSteering(double cte);
+  
+  /*
   * Calculate the total PID error.
   */
-  double TotalError();
+  double TotalError(double cte);
+
+  /*
+  * Optimize PID parameters
+  */
+  void Twiddle(double rmse);
 };
 
 #endif /* PID_H */
